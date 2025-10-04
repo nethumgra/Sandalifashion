@@ -1,169 +1,209 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" class=""> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Finance Dashboard - Sandali Fashion's</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Use Poppins font with Tailwind */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .progress-bar-bg {
+            background-color: #e5e7eb; /* gray-200 */
+        }
+        .dark .progress-bar-bg {
+            background-color: #4b5563; /* gray-600 */
+        }
+    </style>
 </head>
-<body>
-    <div class="main-container">
-        <header class="dashboard-header">
-            <h1>Sandali Fashion's</h1>
-            <div class="month-selector-container">
-                <label for="month-filter">Select Month:</label>
-                <select id="month-filter"></select>
-            </div>
-        </header>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
 
-        <main class="dashboard-grid">
-            <section class="main-content">
-                <div class="widget">
-                    <div class="widget-header">
-                        <h3>Monthly Overview Chart</h3>
-                        <div id="chart-view-selector">
-                            <button id="monthly-view-btn" class="view-btn active">Monthly</button>
-                            <button id="weekly-view-btn" class="view-btn">Weekly</button>
-                        </div>
-                    </div>
-                    <div class="chart-container" style="position: relative; height:40vh; width:100%">
-                        <canvas id="finance-chart"></canvas>
+    <div class="flex">
+   <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 h-screen fixed top-0 left-0 p-5 border-r border-gray-200 dark:border-gray-700 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50">
+    <div class="flex items-center gap-3 mb-10">
+        <i class="fas fa-gem text-3xl text-blue-500"></i>
+        <h1 class="text-xl font-bold">Sandali Fashion's</h1>
+    </div>
+    <nav class="flex flex-col gap-3 flex-grow">
+        <a href="index.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <i class="fas fa-chart-pie w-5 text-center"></i> Finance Dashboard
+        </a>
+        
+        <a href="orders.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <i class="fas fa-box-open w-5 text-center"></i> My Orders
+        </a>
+        
+        <a href="customers.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <i class="fas fa-users w-5 text-center"></i> Customers
+        </a>
+        
+        <a href="invoice.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <i class="fas fa-file-invoice w-5 text-center"></i> Invoices
+        </a>
+        
+    
+    </nav>
+    <div class="mt-auto">
+        <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            </button>
+    </div>
+</aside>
+        <main class="flex-1 lg:ml-64 p-4 sm:p-6 lg:p-8">
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold">Welcome Back!</h2>
+                    <p class="text-gray-500 dark:text-gray-400">Your financial summary is ready.</p>
+                </div>
+                <button id="mobile-menu-btn" class="lg:hidden text-2xl p-2">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </header>
+
+            <section class="flex flex-wrap gap-4 items-center justify-between mb-8">
+                <div>
+                    <label for="month-filter" class="sr-only">Select Month</label>
+                    <select id="month-filter" class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
+                        </select>
+                </div>
+                <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+                    <button id="monthly-view-btn" class="px-4 py-2 text-sm font-semibold rounded-md bg-blue-500 text-white">Monthly</button>
+                    <button id="weekly-view-btn" class="px-4 py-2 text-sm font-semibold rounded-md text-gray-600 dark:text-gray-300">Weekly</button>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900"><i class="fas fa-arrow-up text-xl text-green-500"></i></div>
+                    <div>
+                        <h4 class="text-sm text-gray-500 dark:text-gray-400">Total Income</h4>
+                        <p id="total-income" class="text-2xl font-bold">Rs 0.00</p>
                     </div>
                 </div>
-
-                <div class="widget">
-                    <div class="targets-section">
-                        <div class="widget-header">
-                            <h3>Monthly Targets & Progress</h3>
-                            <button id="toggle-targets-btn" class="kebab-btn">⋮</button>
-                        </div>
-                        
-                        <form id="target-form">
-                            <div class="form-control">
-                                <label for="income-target">Income Target</label>
-                                <input type="number" id="income-target" placeholder="e.g., 50000">
-                            </div>
-                            <div class="form-control">
-                                <label for="expense-target">Expense Target (Max)</label>
-                                <input type="number" id="expense-target" placeholder="e.g., 20000">
-                            </div>
-                            <div class="form-control">
-                                <label for="saving-target">Saving Target</label>
-                                <input type="number" id="saving-target" placeholder="e.g., 10000">
-                            </div>
-                            <div class="button-container-targets">
-                                <button id="set-target-btn" class="btn">Set Targets</button>
-                                <button id="clear-targets-btn" class="btn expense-btn">Clear</button>
-                            </div>
-                        </form>
-
-                        <div id="progress-container">
-                            <div class="progress-item">
-                                <label>Income Progress</label>
-                                <div class="progress-bar-bg">
-                                    <div id="income-progress-bar" class="progress-bar income-bar"></div>
-                                </div>
-                                <small id="income-progress-text">No target set</small>
-                            </div>
-                            <div class="progress-item">
-                                <label>Expense Progress</label>
-                                <div class="progress-bar-bg">
-                                    <div id="expense-progress-bar" class="progress-bar expense-bar"></div>
-                                </div>
-                                <small id="expense-progress-text">No target set</small>
-                            </div>
-                            <div class="progress-item">
-                                <label>Saving Progress</label>
-                                <div class="progress-bar-bg">
-                                    <div id="saving-progress-bar" class="progress-bar saving-bar"></div>
-                                </div>
-                                <small id="saving-progress-text">No target set</small>
-                            </div>
-                        </div>
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900"><i class="fas fa-arrow-down text-xl text-red-500"></i></div>
+                    <div>
+                        <h4 class="text-sm text-gray-500 dark:text-gray-400">Total Expenses</h4>
+                        <p id="total-expenses" class="text-2xl font-bold">Rs 0.00</p>
                     </div>
                 </div>
-
-                <div class="widget">
-                    <div class="history-container">
-                        <div class="history-column">
-                            <h3>Income</h3>
-                            <ul id="income-list" class="list"></ul>
-                        </div>
-                        <div class="history-column">
-                            <h3>Expenses</h3>
-                            <ul id="expense-list" class="list"></ul>
-                        </div>
-                        <div class="history-column">
-                            <h3>Savings</h3>
-                            <ul id="saving-list" class="list"></ul>
-                        </div>
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 dark:bg-purple-900"><i class="fas fa-piggy-bank text-xl text-purple-500"></i></div>
+                    <div>
+                        <h4 class="text-sm text-gray-500 dark:text-gray-400">Total Savings</h4>
+                        <p id="total-savings" class="text-2xl font-bold">Rs 0.00</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900"><i class="fas fa-wallet text-xl text-yellow-500"></i></div>
+                    <div>
+                        <h4 class="text-sm text-gray-500 dark:text-gray-400">Available Balance</h4>
+                        <p id="balance" class="text-2xl font-bold">Rs 0.00</p>
                     </div>
                 </div>
             </section>
 
-            <aside class="sidebar">
-                <div class="widget">
-                    <h3>Add New Transaction</h3>
-                    <form id="transaction-form">
-                        <div class="form-control">
-                            <label for="description">Description</label>
-                            <input type="text" id="description" placeholder="Enter description..." required>
-                        </div>
-                        <div class="form-control">
-                            <label for="amount">Amount</label>
-                            <input type="number" id="amount" placeholder="Enter amount..." required>
-                        </div>
-                         <div class="form-control">
-                            <label for="date">Date</label>
-                            <input type="date" id="date" required>
-                        </div>
-                        
-                        <div class="form-control checkbox-control">
-                            <input type="checkbox" id="auto-save-toggle" checked>
-                            <label for="auto-save-toggle">Auto-save 75% of new income</label>
-                        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <section class="lg:col-span-2 flex flex-col gap-8">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">Monthly Overview</h3>
+                        <div class="h-80"><canvas id="finance-chart"></canvas></div>
+                    </div>
 
-                        <div class="button-container">
-                            <button id="add-income-btn" class="btn income-btn">Add Income</button>
-                            <button id="add-expense-btn" class="btn expense-btn">Add Expense</button>
-                            <button id="add-saving-btn" class="btn saving-btn">Add Saving</button>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+                            <h3 class="font-semibold mb-3 border-b pb-2 border-gray-200 dark:border-gray-700">Income</h3>
+                            <ul id="income-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
                         </div>
-                    </form>
-                </div>
-
-                <div class="widget">
-                     <h3>Overall Summary</h3>
-                    <div class="summary-container">
-                        <div class="summary-box">
-                            <h4>Total Income</h4>
-                            <p id="total-income" class="income-amount">Rs 0.00</p>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+                            <h3 class="font-semibold mb-3 border-b pb-2 border-gray-200 dark:border-gray-700">Expenses</h3>
+                            <ul id="expense-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
                         </div>
-                        <div class="summary-box">
-                            <h4>Total Expenses</h4>
-                            <p id="total-expenses" class="expense-amount">Rs 0.00</p>
-                        </div>
-                        <div class="summary-box">
-                            <h4>Total Savings</h4>
-                            <p id="total-savings" class="saving-amount">Rs 0.00</p>
-                        </div>
-                        <div class="summary-box">
-                            <h4>Available Balance</h4>
-                            <p id="balance">Rs 0.00</p>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+                            <h3 class="font-semibold mb-3 border-b pb-2 border-gray-200 dark:border-gray-700">Savings</h3>
+                            <ul id="saving-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
                         </div>
                     </div>
-                </div>
-                
-                <div class="widget">
-                    <h3>Analysis for Selected Month</h3>
-                    <div id="monthly-summary" class="analysis-container"></div>
-                </div>
+                </section>
 
-                <div class="widget">
-                    <h3>Data Management</h3>
-                    <button id="clear-all-btn" class="btn expense-btn">Clear All Data</button>
-                </div>
-            </aside>
+                <aside class="flex flex-col gap-8">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">Add Transaction</h3>
+                        <form id="transaction-form" class="flex flex-col gap-4">
+                             <div>
+                                <label for="description" class="text-sm font-medium mb-1 block">Description</label>
+                                <input type="text" id="description" placeholder="e.g., Salary, Rent" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                            </div>
+                            <div>
+                                <label for="amount" class="text-sm font-medium mb-1 block">Amount (Rs)</label>
+                                <input type="number" id="amount" placeholder="Enter amount..." required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                            </div>
+                            <div>
+                                <label for="date" class="text-sm font-medium mb-1 block">Date</label>
+                                <input type="date" id="date" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                            </div>
+                            <div class="flex gap-3 mt-2">
+                                <button type="button" id="add-income-btn" class="w-full py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition">Income</button>
+                                <button type="button" id="add-expense-btn" class="w-full py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition">Expense</button>
+                                <button type="button" id="add-saving-btn" class="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition">Saving</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">Monthly Analysis</h3>
+                        <div id="monthly-summary">
+                            <p class="text-center text-gray-500">Select a month to see analysis.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Financial Targets</h3>
+                            <button id="toggle-targets-btn" class="text-blue-500 text-sm font-semibold">Set Targets</button>
+                        </div>
+                        <div class="space-y-4 mb-4">
+                             <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Income</span><span id="income-progress-text">No target</span></div>
+                                <div class="w-full progress-bar-bg rounded-full h-2.5"><div id="income-progress-bar" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Expenses</span><span id="expense-progress-text">No target</span></div>
+                                <div class="w-full progress-bar-bg rounded-full h-2.5"><div id="expense-progress-bar" class="bg-red-500 h-2.5 rounded-full" style="width: 0%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium">Savings</span><span id="saving-progress-text">No target</span></div>
+                                <div class="w-full progress-bar-bg rounded-full h-2.5"><div id="saving-progress-bar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                        <form id="target-form" class="hidden flex-col gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                             <input type="number" id="income-target" placeholder="Income Target (Rs)" class="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                             <input type="number" id="expense-target" placeholder="Expense Limit (Rs)" class="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                             <input type="number" id="saving-target" placeholder="Saving Goal (Rs)" class="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                             <div class="flex gap-2">
+                                <button id="set-target-btn" class="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold text-sm">Save Targets</button>
+                                <button id="clear-targets-btn" class="w-full py-2 bg-gray-500 text-white rounded-lg font-semibold text-sm">Clear</button>
+                             </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md text-center">
+                        <button id="clear-all-btn" class="w-full py-3 bg-red-800 text-white rounded-lg font-semibold hover:bg-red-900 transition">Clear All Data</button>
+                        <p class="text-xs text-gray-400 mt-2">Deletes all transactions and targets permanently.</p>
+                    </div>
+
+                </aside>
+            </div>
         </main>
     </div>
     

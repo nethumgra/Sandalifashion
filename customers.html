@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - Sandali Fashion's</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style> 
+        body { font-family: 'Poppins', sans-serif; } 
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+
+<div class="flex">
+    <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 h-screen fixed top-0 left-0 p-5 border-r border-gray-200 dark:border-gray-700 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50">
+        <div class="flex items-center gap-3 mb-10">
+            <i class="fas fa-gem text-3xl text-blue-500"></i>
+            <h1 class="text-xl font-bold">Sandali Fashion's</h1>
+        </div>
+        <nav class="flex flex-col gap-3 flex-grow">
+            <a href="index.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-chart-pie w-5 text-center"></i> Finance Dashboard
+            </a>
+            <a href="orders.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-box-open w-5 text-center"></i> My Orders
+            </a>
+            <a href="customers.html" class="flex items-center gap-4 p-3 rounded-lg bg-blue-500 text-white font-semibold">
+                <i class="fas fa-users w-5 text-center"></i> Customers
+            </a>
+            <a href="orders.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-file-invoice w-5 text-center"></i> Invoices
+            </a>
+        </nav>
+        <div class="mt-auto">
+            <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 lg:ml-64 p-4 sm:p-6 lg:p-8">
+        <header class="flex justify-between items-center mb-6">
+             <h2 class="text-3xl font-bold">Customer Management</h2>
+             <button id="mobile-menu-btn" class="lg:hidden text-2xl p-2">
+                 <i class="fas fa-bars"></i>
+            </button>
+        </header>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-semibold mb-4">All Customers</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="px-6 py-3">Name</th>
+                                <th class="px-6 py-3">Address</th>
+                                <th class="px-6 py-3">Phone</th>
+                                <th class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customers-table-body">
+                           </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-semibold mb-4">Add New Customer</h3>
+                <form id="add-customer-form" class="space-y-4">
+                    <div>
+                        <label for="customer-name" class="text-sm font-medium mb-1 block">Full Name</label>
+                        <input type="text" id="customer-name" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="customer-address" class="text-sm font-medium mb-1 block">Address</label>
+                        <textarea id="customer-address" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg h-24 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    </div>
+                    <div>
+                        <label for="customer-phone" class="text-sm font-medium mb-1 block">Phone Number</label>
+                        <input type="tel" id="customer-phone" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition">Add Customer</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="edit-customer-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md w-full max-w-md">
+        <h3 class="text-lg font-semibold mb-4">Edit Customer</h3>
+        <form id="edit-customer-form" class="space-y-4">
+            <input type="hidden" id="edit-customer-id">
+            <div>
+                <label for="edit-customer-name" class="text-sm font-medium mb-1 block">Full Name</label>
+                <input type="text" id="edit-customer-name" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div>
+                <label for="edit-customer-address" class="text-sm font-medium mb-1 block">Address</label>
+                <textarea id="edit-customer-address" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg h-24 focus:ring-2 focus:ring-blue-500 transition"></textarea>
+            </div>
+            <div>
+                <label for="edit-customer-phone" class="text-sm font-medium mb-1 block">Phone Number</label>
+                <input type="tel" id="edit-customer-phone" required class="w-full p-3 bg-gray-100 dark:bg-gray-700 border-transparent rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div class="flex gap-4">
+                <button type="button" id="cancel-edit-btn" class="w-full py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition">Cancel</button>
+                <button type="submit" class="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module" src="customers.js"></script>
+</body>
+</html>
