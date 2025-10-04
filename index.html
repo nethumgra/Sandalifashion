@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <header class="dashboard-header">
+            <h1>Sandali Fashion's</h1>
+            <div class="month-selector-container">
+                <label for="month-filter">Select Month:</label>
+                <select id="month-filter"></select>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <section class="main-content">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Monthly Overview Chart</h3>
+                        <div id="chart-view-selector">
+                            <button id="monthly-view-btn" class="view-btn active">Monthly</button>
+                            <button id="weekly-view-btn" class="view-btn">Weekly</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="position: relative; height:40vh; width:100%">
+                        <canvas id="finance-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="targets-section">
+                        <div class="widget-header">
+                            <h3>Monthly Targets & Progress</h3>
+                            <button id="toggle-targets-btn" class="kebab-btn">⋮</button>
+                        </div>
+                        
+                        <form id="target-form">
+                            <div class="form-control">
+                                <label for="income-target">Income Target</label>
+                                <input type="number" id="income-target" placeholder="e.g., 50000">
+                            </div>
+                            <div class="form-control">
+                                <label for="expense-target">Expense Target (Max)</label>
+                                <input type="number" id="expense-target" placeholder="e.g., 20000">
+                            </div>
+                            <div class="form-control">
+                                <label for="saving-target">Saving Target</label>
+                                <input type="number" id="saving-target" placeholder="e.g., 10000">
+                            </div>
+                            <div class="button-container-targets">
+                                <button id="set-target-btn" class="btn">Set Targets</button>
+                                <button id="clear-targets-btn" class="btn expense-btn">Clear</button>
+                            </div>
+                        </form>
+
+                        <div id="progress-container">
+                            <div class="progress-item">
+                                <label>Income Progress</label>
+                                <div class="progress-bar-bg">
+                                    <div id="income-progress-bar" class="progress-bar income-bar"></div>
+                                </div>
+                                <small id="income-progress-text">No target set</small>
+                            </div>
+                            <div class="progress-item">
+                                <label>Expense Progress</label>
+                                <div class="progress-bar-bg">
+                                    <div id="expense-progress-bar" class="progress-bar expense-bar"></div>
+                                </div>
+                                <small id="expense-progress-text">No target set</small>
+                            </div>
+                            <div class="progress-item">
+                                <label>Saving Progress</label>
+                                <div class="progress-bar-bg">
+                                    <div id="saving-progress-bar" class="progress-bar saving-bar"></div>
+                                </div>
+                                <small id="saving-progress-text">No target set</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <div class="history-container">
+                        <div class="history-column">
+                            <h3>Income</h3>
+                            <ul id="income-list" class="list"></ul>
+                        </div>
+                        <div class="history-column">
+                            <h3>Expenses</h3>
+                            <ul id="expense-list" class="list"></ul>
+                        </div>
+                        <div class="history-column">
+                            <h3>Savings</h3>
+                            <ul id="saving-list" class="list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="sidebar">
+                <div class="widget">
+                    <h3>Add New Transaction</h3>
+                    <form id="transaction-form">
+                        <div class="form-control">
+                            <label for="description">Description</label>
+                            <input type="text" id="description" placeholder="Enter description..." required>
+                        </div>
+                        <div class="form-control">
+                            <label for="amount">Amount</label>
+                            <input type="number" id="amount" placeholder="Enter amount..." required>
+                        </div>
+                         <div class="form-control">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        
+                        <div class="form-control checkbox-control">
+                            <input type="checkbox" id="auto-save-toggle" checked>
+                            <label for="auto-save-toggle">Auto-save 75% of new income</label>
+                        </div>
+
+                        <div class="button-container">
+                            <button id="add-income-btn" class="btn income-btn">Add Income</button>
+                            <button id="add-expense-btn" class="btn expense-btn">Add Expense</button>
+                            <button id="add-saving-btn" class="btn saving-btn">Add Saving</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="widget">
+                     <h3>Overall Summary</h3>
+                    <div class="summary-container">
+                        <div class="summary-box">
+                            <h4>Total Income</h4>
+                            <p id="total-income" class="income-amount">Rs 0.00</p>
+                        </div>
+                        <div class="summary-box">
+                            <h4>Total Expenses</h4>
+                            <p id="total-expenses" class="expense-amount">Rs 0.00</p>
+                        </div>
+                        <div class="summary-box">
+                            <h4>Total Savings</h4>
+                            <p id="total-savings" class="saving-amount">Rs 0.00</p>
+                        </div>
+                        <div class="summary-box">
+                            <h4>Available Balance</h4>
+                            <p id="balance">Rs 0.00</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <h3>Analysis for Selected Month</h3>
+                    <div id="monthly-summary" class="analysis-container"></div>
+                </div>
+
+                <div class="widget">
+                    <h3>Data Management</h3>
+                    <button id="clear-all-btn" class="btn expense-btn">Clear All Data</button>
+                </div>
+            </aside>
+        </main>
+    </div>
+    
+    <script type="module" src="main.js"></script>
+</body>
+</html>
