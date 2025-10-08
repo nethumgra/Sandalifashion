@@ -29,36 +29,36 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
 
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
+
     <div class="flex">
-   <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 h-screen fixed top-0 left-0 p-5 border-r border-gray-200 dark:border-gray-700 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50">
-    <div class="flex items-center gap-3 mb-10">
-        <i class="fas fa-gem text-3xl text-blue-500"></i>
-        <h1 class="text-xl font-bold">Sandali Fashion's</h1>
-    </div>
-    <nav class="flex flex-col gap-3 flex-grow">
-        <a href="index.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-            <i class="fas fa-chart-pie w-5 text-center"></i> Finance Dashboard
-        </a>
-        
-        <a href="orders.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-            <i class="fas fa-box-open w-5 text-center"></i> My Orders
-        </a>
-        
-        <a href="customers.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-            <i class="fas fa-users w-5 text-center"></i> Customers
-        </a>
-        
-        <a href="invoice.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-            <i class="fas fa-file-invoice w-5 text-center"></i> Invoices
-        </a>
-        
-    
-    </nav>
-    <div class="mt-auto">
-        <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-            </button>
-    </div>
-</aside>
+       <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 h-screen fixed top-0 left-0 p-5 border-r border-gray-200 dark:border-gray-700 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50">
+        <div class="flex items-center gap-3 mb-10">
+            <i class="fas fa-gem text-3xl text-blue-500"></i>
+            <h1 class="text-xl font-bold">Sandali Fashion's</h1>
+        </div>
+        <nav class="flex flex-col gap-3 flex-grow">
+            <a href="index.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-chart-pie w-5 text-center"></i> Finance Dashboard
+            </a>
+            
+            <a href="orders.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-box-open w-5 text-center"></i> My Orders
+            </a>
+            
+            <a href="customers.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-users w-5 text-center"></i> Customers
+            </a>
+            
+            <a href="invoice.html" class="flex items-center gap-4 p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-file-invoice w-5 text-center"></i> Invoices
+            </a>
+        </nav>
+        <div class="mt-auto">
+            <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                </button>
+        </div>
+    </aside>
         <main class="flex-1 lg:ml-64 p-4 sm:p-6 lg:p-8">
             <header class="flex justify-between items-center mb-6">
                 <div>
@@ -74,7 +74,7 @@
                 <div>
                     <label for="month-filter" class="sr-only">Select Month</label>
                     <select id="month-filter" class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 transition">
-                        </select>
+                    </select>
                 </div>
                 <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
                     <button id="monthly-view-btn" class="px-4 py-2 text-sm font-semibold rounded-md bg-blue-500 text-white">Monthly</button>
@@ -84,28 +84,28 @@
 
             <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900"><i class="fas fa-arrow-up text-xl text-green-500"></i></div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50"><i class="fas fa-arrow-up text-xl text-green-500"></i></div>
                     <div>
                         <h4 class="text-sm text-gray-500 dark:text-gray-400">Total Income</h4>
                         <p id="total-income" class="text-2xl font-bold">Rs 0.00</p>
                     </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900"><i class="fas fa-arrow-down text-xl text-red-500"></i></div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/50"><i class="fas fa-arrow-down text-xl text-red-500"></i></div>
                     <div>
                         <h4 class="text-sm text-gray-500 dark:text-gray-400">Total Expenses</h4>
                         <p id="total-expenses" class="text-2xl font-bold">Rs 0.00</p>
                     </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 dark:bg-purple-900"><i class="fas fa-piggy-bank text-xl text-purple-500"></i></div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 dark:bg-purple-900/50"><i class="fas fa-piggy-bank text-xl text-purple-500"></i></div>
                     <div>
                         <h4 class="text-sm text-gray-500 dark:text-gray-400">Total Savings</h4>
                         <p id="total-savings" class="text-2xl font-bold">Rs 0.00</p>
                     </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md flex items-center gap-5">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900"><i class="fas fa-wallet text-xl text-yellow-500"></i></div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/50"><i class="fas fa-wallet text-xl text-yellow-500"></i></div>
                     <div>
                         <h4 class="text-sm text-gray-500 dark:text-gray-400">Available Balance</h4>
                         <p id="balance" class="text-2xl font-bold">Rs 0.00</p>
@@ -191,8 +191,8 @@
                              <input type="number" id="expense-target" placeholder="Expense Limit (Rs)" class="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
                              <input type="number" id="saving-target" placeholder="Saving Goal (Rs)" class="w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
                              <div class="flex gap-2">
-                                <button id="set-target-btn" class="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold text-sm">Save Targets</button>
-                                <button id="clear-targets-btn" class="w-full py-2 bg-gray-500 text-white rounded-lg font-semibold text-sm">Clear</button>
+                                <button type="button" id="set-target-btn" class="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold text-sm">Save Targets</button>
+                                <button type="button" id="clear-targets-btn" class="w-full py-2 bg-gray-500 text-white rounded-lg font-semibold text-sm">Clear</button>
                              </div>
                         </form>
                     </div>

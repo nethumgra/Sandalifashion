@@ -1,8 +1,10 @@
+// order.js
+
 // 1. Import functions from the Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Firebase Config (remains the same)
+// 2. Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyDAi6YT-xtoNx7chLmcRWxZeS21aSz_3aY",
     authDomain: "sandali-201ca.firebaseapp.com",
@@ -14,41 +16,39 @@ const firebaseConfig = {
     measurementId: "G-7WFSHYD0NL"
 };
 
-// Initialize Firebase
+// 3. Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const ordersRef = ref(database, 'orders');
 
-// Global State
+// 4. Global State
 let allOrders = {};
 
-// Get DOM Elements
+// 5. Get DOM Elements
 const ordersTableBody = document.getElementById('orders-table-body');
 const searchInput = document.getElementById('search-input');
+const filterStatus = document.getElementById('filter-status');
 const orderForm = document.getElementById('order-form');
-const editModal = document.getElementById('edit-modal');
-const editForm = document.getElementById('edit-order-form');
-const closeModalBtn = document.getElementById('close-edit-modal-btn');
-
 const productDropdown = document.getElementById('product');
 const otherProductWrapper = document.getElementById('other-product-wrapper');
 const editProductDropdown = document.getElementById('edit-product');
 const editOtherProductWrapper = document.getElementById('edit-other-product-wrapper');
-
-// Invoice Modal Elements
+const totalOrdersStat = document.getElementById('total-orders-stat');
+const totalRevenueStat = document.getElementById('total-revenue-stat');
+const totalCostStat = document.getElementById('total-cost-stat');
+const pendingOrdersStat = document.getElementById('pending-orders-stat');
+const editModal = document.getElementById('edit-modal');
+const editForm = document.getElementById('edit-order-form');
+const closeModalBtn = document.getElementById('close-edit-modal-btn');
 const invoiceModal = document.getElementById('invoice-modal');
 const closeInvoiceBtn = invoiceModal.querySelector('.close-invoice-btn');
 const downloadInvoiceBtn = document.getElementById('download-invoice-btn');
 const invoiceContent = document.getElementById('invoice-content');
-const invoiceNumber = document.getElementById('invoice-number');
-const invoiceDate = document.getElementById('invoice-date');
-const invoiceOrderDate = document.getElementById('invoice-order-date');
-const invoiceCustomerName = document.getElementById('invoice-customer-name');
-const invoiceDetails = document.getElementById('invoice-details');
-const invoicePrice = document.getElementById('invoice-price');
-const invoiceTotal = document.getElementById('invoice-total');
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-
+// 6. Constants
 const statusClasses = {
     Pending: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
     Shipped: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
@@ -73,8 +73,8 @@ function renderOrders(ordersObject) {
         row.innerHTML = `
             <td class="px-6 py-4 font-medium text-white">${order.customerName}</td>
             <td class="px-6 py-4 text-slate-300 font-semibold">${order.product || ''}</td>
-            <td class="px-6 py-4 text-slate-300">${order.details}</td>
-            <td class="px-6 py-4 text-slate-300">${(order.price || 0).toFixed(2)}</td>
+            <td class="px-6 py-4 text-slate-300 max-w-xs truncate" title="${order.details}">${order.details}</td>
+            <td class="px-6 py-4 text-slate-300">Rs ${(order.price || 0).toFixed(2)}</td>
             <td class="px-6 py-4 text-slate-300">${order.orderDate}</td>
             <td class="px-6 py-4">
                 <span class="px-2.5 py-1 font-medium text-xs rounded-full ${statusClasses[order.status] || 'bg-slate-600 text-slate-300'}">
@@ -91,36 +91,53 @@ function renderOrders(ordersObject) {
     }
 }
 
+function calculateStats(orders) {
+    const ordersArray = Object.values(orders);
+    totalOrdersStat.textContent = ordersArray.length;
+    totalRevenueStat.textContent = ordersArray.reduce((sum, order) => sum + (order.price || 0), 0).toFixed(2);
+    totalCostStat.textContent = ordersArray.reduce((sum, order) => sum + (order.cost || 0), 0).toFixed(2);
+    pendingOrdersStat.textContent = ordersArray.filter(order => order.status === 'Pending').length;
+}
+
+function filterAndRender() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const statusFilterValue = filterStatus.value;
+    const filteredOrders = Object.fromEntries(
+        Object.entries(allOrders).filter(([, order]) => 
+            (order.customerName.toLowerCase().includes(searchTerm) || order.details.toLowerCase().includes(searchTerm) || (order.product && order.product.toLowerCase().includes(searchTerm))) && 
+            (statusFilterValue === 'all' || order.status === statusFilterValue)
+        )
+    );
+    renderOrders(filteredOrders);
+}
+
 // --- CRUD & Other Functions ---
 
 function addOrder(event) {
     event.preventDefault();
-    const customerName = document.getElementById('customer-name').value;
     const product = document.getElementById('product').value;
     let orderDetails = document.getElementById('order-details').value;
-    const price = document.getElementById('price').value;
-    const orderDate = document.getElementById('order-date').value;
-    const deliveryStatus = document.getElementById('delivery-status').value;
-
+    
     if (product === 'Other') {
         const otherDetails = document.getElementById('other-product-details').value;
-        if (otherDetails.trim() !== '') {
-             orderDetails = `${otherDetails} (${orderDetails})`;
-        }
+        orderDetails = `${otherDetails.trim()}: ${orderDetails}`;
     }
 
-    if (!customerName.trim() || !orderDetails.trim() || !price || !orderDate) {
+    const newOrder = {
+        customerName: document.getElementById('customer-name').value,
+        product: product,
+        details: orderDetails,
+        price: +document.getElementById('price').value,
+        orderDate: document.getElementById('order-date').value,
+        status: document.getElementById('delivery-status').value,
+        cost: 0 
+    };
+
+    if (!newOrder.customerName.trim() || !newOrder.details.trim() || !newOrder.price || !newOrder.orderDate) {
         alert('Please fill out all required fields.');
         return;
     }
-    const newOrder = {
-        customerName: customerName,
-        product: product,
-        details: orderDetails,
-        price: +price,
-        orderDate: orderDate,
-        status: deliveryStatus,
-    };
+
     push(ordersRef, newOrder);
     orderForm.reset();
     document.getElementById('order-date').value = new Date().toISOString().slice(0, 10);
@@ -135,63 +152,44 @@ function openEditModal(orderId) {
     document.getElementById('edit-product').value = order.product || 'Other';
     document.getElementById('edit-order-details').value = order.details;
     document.getElementById('edit-price').value = order.price;
+    document.getElementById('edit-cost').value = order.cost || 0;
     document.getElementById('edit-order-date').value = order.orderDate;
     document.getElementById('edit-delivery-status').value = order.status;
 
     editProductDropdown.dispatchEvent(new Event('change'));
-    editModal.classList.remove('hidden');
-}
+    
+    const editCostWrapper = document.getElementById('edit-cost-wrapper');
+    if (order.status === 'Delivered' || order.status === 'Shipped') {
+        editCostWrapper.classList.remove('hidden');
+    } else {
+        editCostWrapper.classList.add('hidden');
+    }
 
-function closeEditModal() {
-    editModal.classList.add('hidden');
+    editModal.classList.remove('hidden');
 }
 
 function handleUpdateOrder(event) {
     event.preventDefault();
     const orderId = document.getElementById('edit-order-id').value;
-    const product = document.getElementById('edit-product').value;
-    let details = document.getElementById('edit-order-details').value;
-
-    if (product === 'Other') {
-        const otherDetails = document.getElementById('edit-other-product-details').value;
-        if (otherDetails.trim() !== '') {
-            details = `${otherDetails} (${details})`;
-        }
-    }
+    if (!orderId) return;
 
     const updatedOrderData = {
         customerName: document.getElementById('edit-customer-name').value,
-        product: product,
-        details: details,
+        product: document.getElementById('edit-product').value,
+        details: document.getElementById('edit-order-details').value,
         price: +document.getElementById('edit-price').value,
+        cost: +document.getElementById('edit-cost').value,
         orderDate: document.getElementById('edit-order-date').value,
         status: document.getElementById('edit-delivery-status').value,
     };
     const orderToUpdateRef = ref(database, `orders/${orderId}`);
-    update(orderToUpdateRef, updatedOrderData).then(closeEditModal);
+    update(orderToUpdateRef, updatedOrderData).then(() => editModal.classList.add('hidden'));
 }
 
-function calculateStats(orders) {
-    const totalOrdersStat = document.getElementById('total-orders-stat');
-    const totalRevenueStat = document.getElementById('total-revenue-stat');
-    const pendingOrdersStat = document.getElementById('pending-orders-stat');
-    
-    const ordersArray = Object.values(orders);
-    totalOrdersStat.textContent = ordersArray.length;
-    totalRevenueStat.textContent = ordersArray.reduce((sum, order) => sum + (order.price || 0), 0).toFixed(2);
-    pendingOrdersStat.textContent = ordersArray.filter(order => order.status === 'Pending').length;
-}
-
-function filterAndRender() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const statusFilter = document.getElementById('filter-status').value;
-    const filteredOrders = Object.fromEntries(
-        Object.entries(allOrders).filter(([, order]) => 
-            (order.customerName.toLowerCase().includes(searchTerm) || order.details.toLowerCase().includes(searchTerm) || (order.product && order.product.toLowerCase().includes(searchTerm))) && 
-            (statusFilter === 'all' || order.status === statusFilter)
-        )
-    );
-    renderOrders(filteredOrders);
+function handleDeleteOrder(orderId) {
+    if (confirm('Are you sure you want to delete this order?')) {
+        remove(ref(database, 'orders/' + orderId));
+    }
 }
 
 // --- Invoice Functions ---
@@ -201,24 +199,53 @@ function openInvoiceModal(orderId) {
     if (!order) return;
 
     const invNum = `INV-${orderId.slice(-6).toUpperCase()}`;
-    invoiceNumber.textContent = invNum;
+    const invDate = new Date().toLocaleDateString('en-CA');
     
-    invoiceDate.textContent = new Date().toLocaleDateString('en-CA');
-    invoiceOrderDate.textContent = order.orderDate;
-    invoiceCustomerName.textContent = order.customerName;
-    
-    let invoiceDesc = `${order.product} - ${order.details}`;
-    if (order.product === 'Other') {
-        invoiceDesc = order.details;
-    }
-    invoiceDetails.textContent = invoiceDesc;
-    
-    invoicePrice.textContent = (order.price || 0).toFixed(2);
-    invoiceTotal.textContent = (order.price || 0).toFixed(2);
-    
+    invoiceContent.innerHTML = `
+        <div class="flex justify-between items-start mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800">INVOICE</h1>
+                <p class="text-slate-500">Invoice #: ${invNum}</p>
+                <p class="text-slate-500">Date: ${invDate}</p>
+            </div>
+            <div class="text-right">
+                 <h2 class="text-2xl font-semibold">Sandali Fashion's</h2>
+                 <p class="text-slate-600">Your Address Here</p>
+                 <p class="text-slate-600">Your Contact Info</p>
+            </div>
+        </div>
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold text-slate-700 mb-2">Bill To:</h3>
+            <p class="text-slate-800 font-medium">${order.customerName}</p>
+            <p class="text-slate-600">Order Date: ${order.orderDate}</p>
+        </div>
+        <table class="w-full text-left mb-8">
+            <thead>
+                <tr class="bg-slate-200">
+                    <th class="p-3 font-semibold">Description</th>
+                    <th class="p-3 font-semibold text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="p-3 border-b border-slate-200">${order.product} - ${order.details}</td>
+                    <td class="p-3 border-b border-slate-200 text-right">Rs ${(order.price || 0).toFixed(2)}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="p-3 font-bold text-right">Total</td>
+                    <td class="p-3 font-bold text-right text-lg">Rs ${(order.price || 0).toFixed(2)}</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="text-center text-slate-500 text-sm">
+            <p>Thank you for your business!</p>
+        </div>
+    `;
+
     downloadInvoiceBtn.dataset.invoiceId = invNum;
     downloadInvoiceBtn.dataset.customerName = order.customerName;
-
     invoiceModal.classList.remove('hidden');
 }
 
@@ -226,77 +253,83 @@ function downloadInvoiceAsPDF() {
     const invId = downloadInvoiceBtn.dataset.invoiceId;
     const custName = downloadInvoiceBtn.dataset.customerName;
     const filename = `Invoice-${invId}-${custName.replace(/\s/g, '_')}.pdf`;
-
-    const options = {
-      margin: 0.5,
-      filename: filename,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
-    html2pdf().set(options).from(invoiceContent).save();
+    html2pdf().from(invoiceContent).set({
+        margin: 0.5,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    }).save();
 }
 
-// --- Event Listeners ---
+// --- Initializer & Event Listeners ---
 
-productDropdown.addEventListener('change', () => {
-    if (productDropdown.value === 'Other') {
-        otherProductWrapper.classList.remove('hidden');
-    } else {
-        otherProductWrapper.classList.add('hidden');
-    }
-});
+function setupEventListeners() {
+    // Add Order Form
+    orderForm.addEventListener('submit', addOrder);
+    productDropdown.addEventListener('change', () => {
+        otherProductWrapper.classList.toggle('hidden', productDropdown.value !== 'Other');
+    });
 
-editProductDropdown.addEventListener('change', () => {
-    if (editProductDropdown.value === 'Other') {
-        editOtherProductWrapper.classList.remove('hidden');
-    } else {
-        editOtherProductWrapper.classList.add('hidden');
-    }
-});
+    // Edit Modal
+    editForm.addEventListener('submit', handleUpdateOrder);
+    closeModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) editModal.classList.add('hidden');
+    });
+    editProductDropdown.addEventListener('change', () => {
+        editOtherProductWrapper.classList.toggle('hidden', editProductDropdown.value !== 'Other');
+    });
+    document.getElementById('edit-delivery-status').addEventListener('change', (e) => {
+        const status = e.target.value;
+        const editCostWrapper = document.getElementById('edit-cost-wrapper');
+        editCostWrapper.classList.toggle('hidden', !(status === 'Delivered' || status === 'Shipped'));
+    });
 
-orderForm.addEventListener('submit', addOrder);
-editForm.addEventListener('submit', handleUpdateOrder);
+    // Table actions
+    ordersTableBody.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const orderId = button.closest('tr').dataset.id;
+        if (button.classList.contains('delete-btn')) handleDeleteOrder(orderId);
+        if (button.classList.contains('edit-btn')) openEditModal(orderId);
+        if (button.classList.contains('invoice-btn')) openInvoiceModal(orderId);
+    });
 
-ordersTableBody.addEventListener('click', (event) => {
-    const button = event.target.closest('button');
-    if (!button) return;
-    const orderId = button.closest('tr').dataset.id;
-    if (button.classList.contains('delete-btn')) {
-        if (confirm('Are you sure you want to delete this order?')) {
-            remove(ref(database, 'orders/' + orderId));
-        }
-    } else if (button.classList.contains('edit-btn')) {
-        openEditModal(orderId);
-    } else if (button.classList.contains('invoice-btn')) {
-        openInvoiceModal(orderId);
-    }
-});
+    // Filtering and Searching
+    searchInput.addEventListener('input', filterAndRender);
+    filterStatus.addEventListener('change', filterAndRender);
 
-searchInput.addEventListener('input', filterAndRender);
-document.getElementById('filter-status').addEventListener('change', filterAndRender);
-closeModalBtn.addEventListener('click', closeEditModal);
-editModal.addEventListener('click', (event) => {
-    if (event.target === editModal) {
-        closeEditModal();
-    }
-});
+    // Invoice Modal
+    downloadInvoiceBtn.addEventListener('click', downloadInvoiceAsPDF);
+    closeInvoiceBtn.addEventListener('click', () => invoiceModal.classList.add('hidden'));
+    invoiceModal.addEventListener('click', (e) => {
+        if (e.target === invoiceModal) invoiceModal.classList.add('hidden');
+    });
 
-downloadInvoiceBtn.addEventListener('click', downloadInvoiceAsPDF);
-closeInvoiceBtn.addEventListener('click', () => invoiceModal.classList.add('hidden'));
-invoiceModal.addEventListener('click', (event) => {
-    if (event.target === invoiceModal) {
-        invoiceModal.classList.add('hidden');
-    }
-});
+    // Hamburger Menu
+    const toggleMenu = () => {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+    };
+    mobileMenuBtn.addEventListener('click', toggleMenu);
+    sidebarOverlay.addEventListener('click', toggleMenu);
+}
+
+// **FIX:** Renamed this function to avoid conflict with the Firebase import.
+function initializeOrderPage() {
+    setupEventListeners();
+    document.getElementById('order-date').value = new Date().toISOString().slice(0, 10);
+}
+
+// --- Firebase Realtime Listener ---
 
 onValue(ordersRef, (snapshot) => {
-    const data = snapshot.val();
-    allOrders = data || {};
+    allOrders = snapshot.val() || {};
     calculateStats(allOrders);
     filterAndRender();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('order-date').value = new Date().toISOString().slice(0, 10);
-});
+// --- Start the App ---
+// **FIX:** Calling the newly renamed function.
+document.addEventListener('DOMContentLoaded', initializeOrderPage);
